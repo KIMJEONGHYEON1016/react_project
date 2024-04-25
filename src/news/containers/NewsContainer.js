@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import NewsCategory from '../components/NewsCategory';
 import NewsItems from '../components/NewsItems';
 
@@ -33,24 +33,24 @@ const categories = [
     text: '기술',
   },
 ];
-
 const NewsContainer = () => {
   const [items, setItems] = useState([]);
-  const [category, setCategory] = useState('all');
+  let { category } = useParams();
+  category = category ?? 'all';
 
   useEffect(() => {
+    const apiKey = process.env.REACT_APP_API_KEY;
     const addQs = category === 'all' ? '' : `&category=${category}`;
-    const url = `https://newsapi.org/v2/top-headlines?country=kr${addQs}&apiKey=785457c6d773416983108b091d9c348a`;
+    const url = `https://newsapi.org/v2/top-headlines?country=kr${addQs}&apiKey=${apiKey}`;
 
     fetch(url)
       .then((res) => res.json())
       .then((json) => setItems(json.articles));
   }, [category]);
 
-  const onClick = useCallback((category) => setCategory(category), []);
   return (
     <>
-      <NewsCategory categories={categories} onClick={onClick} />
+      <NewsCategory categories={categories} />
       <NewsItems items={items} />
     </>
   );
